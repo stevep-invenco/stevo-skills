@@ -1,0 +1,5 @@
+# Codex skill metadata. This skill is superseded by the Invenco ticket
+# planning skills and is kept for manual use only: Codex must not trigger
+# it implicitly from prompt content. Explicit `$ticket-writing` still works.
+policy:
+  allow_implicit_invocation: false

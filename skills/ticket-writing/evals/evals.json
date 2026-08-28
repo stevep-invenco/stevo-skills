@@ -1,0 +1,75 @@
+{
+  "skill_name": "ticket-writing",
+  "evals": [
+    {
+      "id": 1,
+      "name": "worklog-summary-from-plan-conversation",
+      "prompt": "write the tickets",
+      "context": "User had a design conversation (002-summary-conversation.md) and a plan-mode document (002-summary-plan.md) for a `worklog summary` CLI command. The skill was invoked after both existed in conversation context.",
+      "expected_output": "A self-contained ticket with: (1) Summary capturing design decisions AND the conversation back-and-forth (human overrides, redirections), (2) Scope section with in/out/related items, (3) Plan section preserving behavioral contract (CLI output format, exit codes, sort order, empty-range semantics) not just file listings with type signatures. The ticket should not require the reader to find the plan document separately.",
+      "input_files": [
+        "evals/002-summary-conversation.md",
+        "evals/002-summary-plan.md"
+      ],
+      "actual_output": "evals/002-summary-output.md",
+      "observations": [
+        "Summary section was good — captured 6 key design decisions with rationale",
+        "Plan section distilled to file listings + type signatures, dropped behavioral contract (CLI output format, exit codes, sort rules, empty-range semantics)",
+        "No Scope section — out-of-scope items (presets, date-fns, configurable sort) buried in Summary narrative",
+        "Conversation summary thin — says 'settled in conversation' without capturing human redirections (pushed back on grouping, overrode separate-skill recommendation)",
+        "Ticket assumes plan document travels with it — not self-contained"
+      ],
+      "assertions": [
+        {
+          "id": "scope-section-present",
+          "text": "Ticket contains an explicit Scope section with In Scope and Out of Scope headers",
+          "check": "regex",
+          "pattern": "(?i)##?#?\\s*(in\\s+scope|out\\s+of\\s+scope)"
+        },
+        {
+          "id": "behavioral-contract-present",
+          "text": "Ticket documents the behavioral contract — exit codes, output format, and edge case behavior",
+          "check": "contains_all",
+          "terms": ["exit 0", "exit 2", "YYYY-MM-DD"]
+        },
+        {
+          "id": "conversation-trail-has-overrides",
+          "text": "Conversation trail names specific human overrides — not just 'as discussed' or 'settled in conversation'",
+          "check": "contains_any",
+          "terms": ["human chose", "human overrode", "human disagreed", "human pushed back", "human agreed", "human caught", "human corrected"],
+          "negative_terms": ["as discussed", "as settled in conversation", "as we agreed"]
+        },
+        {
+          "id": "self-contained",
+          "text": "Ticket does not reference external plan documents the reader would need to find",
+          "check": "not_contains",
+          "terms": ["see the plan", "refer to the plan", "detailed in the plan document", "see plan mode output"]
+        },
+        {
+          "id": "out-of-scope-has-rationale",
+          "text": "Each out-of-scope item includes a reason for exclusion, not just a bare list",
+          "check": "manual",
+          "description": "Review each Out of Scope item — every item should have a short rationale (e.g. 'the agent caller resolves these') not just a label"
+        },
+        {
+          "id": "empty-range-behavior-specified",
+          "text": "Ticket specifies what happens when the date range matches no entries",
+          "check": "contains_any",
+          "terms": ["No entries in range", "empty range", "empty result"]
+        },
+        {
+          "id": "execution-detail-present-when-plan-exists",
+          "text": "When a detailed plan existed in the conversation, the Execution Detail section is present and non-trivial",
+          "check": "contains_any",
+          "terms": ["Execution Detail", "execution detail"]
+        },
+        {
+          "id": "related-work-references-siblings",
+          "text": "Related Work section references sibling tickets (001 and 003)",
+          "check": "contains_all",
+          "terms": ["001", "003"]
+        }
+      ]
+    }
+  ]
+}
