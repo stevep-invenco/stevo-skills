@@ -1,11 +1,11 @@
 ---
 name: notion
-description: Conventions and cached structure for working with the Invenco Notion workspace via the `notion-server` MCP server — projects, project notes, cycles, pitches, and page content. Consult this skill before the first `mcp__notion-server__*` call in a turn so the call is shaped by the conventions here. Trigger whenever the user mentions Notion, asks to create/read/update a project, add a note, check a pitch, look up a cycle, or refers to any Notion page — even if they don't explicitly say "Notion". Also trigger on phrases like "add a note to project X", "what's in the project notes", "check the pitch for X", "create a project for cycle N", or when the user pastes a notion.so URL.
+description: Conventions and cached structure for working with the Invenco Notion workspace via the configured Notion MCP server — projects, project notes, cycles, pitches, and page content. Consult this skill before the first Notion MCP tool call in a turn so the call is shaped by the conventions here. Trigger whenever the user mentions Notion, asks to create/read/update a project, add a note, check a pitch, look up a cycle, or refers to any Notion page — even if they don't explicitly say "Notion". Also trigger on phrases like "add a note to project X", "what's in the project notes", "check the pitch for X", "create a project for cycle N", or when the user pastes a notion.so URL.
 ---
 
 ## Authentication
 
-The Notion MCP requires OAuth each session. If a `mcp__notion-server__*` call fails or the tools aren't available yet, run `mcp__notion-server__authenticate` and ask the user to open the auth URL. If the redirect page shows a connection error, ask the user to paste the full URL from the address bar and call `mcp__notion-server__complete_authentication` with it.
+The Notion MCP requires OAuth each session. If a Notion MCP call fails or the tools aren't available yet, run the Notion `authenticate` tool and ask the user to open the auth URL. If the redirect page shows a connection error, ask the user to paste the full URL from the address bar and call the Notion `complete_authentication` tool with it.
 
 ## Workspace structure
 

@@ -1,6 +1,6 @@
 ---
 name: linear
-description: Conventions and guidance for working with Linear via the `linear-server` MCP server — issues, comments, triage, status transitions, and Slack-synced threads. Make sure to use this skill whenever the user mentions Linear, "tickets", "ENG-XXXX" identifiers, triage, or asks you to read/write/close/comment on issues, AND whenever you are about to call any `mcp__linear-server__*` tool — even if the user does not explicitly ask for the skill. Consult this skill before the first Linear MCP call in a turn so the call is shaped by the conventions here.
+description: Conventions and guidance for working with Linear via the configured Linear MCP server — issues, comments, triage, status transitions, and Slack-synced threads. Make sure to use this skill whenever the user mentions Linear, "tickets", "ENG-XXXX" identifiers, triage, or asks you to read/write/close/comment on issues, AND whenever you are about to call any Linear MCP tool — even if the user does not explicitly ask for the skill. Consult this skill before the first Linear MCP call in a turn so the call is shaped by the conventions here.
 ---
 
 ## Identifiers and teams
@@ -50,12 +50,12 @@ There can be multiple markers per issue (one per Linear comment thread that got 
 
 ### Step-by-step: post a comment into a Slack-synced ticket
 
-1. **Pull comments** — `mcp__linear-server__list_comments` with the issue identifier (e.g. `ENG-4909`).
+1. **Pull comments** — `list_comments` with the issue identifier (e.g. `ENG-4909`).
 2. **Find the marker** — grep the comment bodies for `synced to a corresponding [thread in Slack]`. Take the Slack URL from inside the link.
 3. **Parse the URL** — format is `https://<workspace>.slack.com/archives/<CHANNEL_ID>/p<TS_DIGITS>` with optional `?thread_ts=<TS>&cid=<CHANNEL_ID>`. Extract:
    - `channel_id` → the path segment after `archives/` (e.g. `C08R9J2D69W`).
    - `thread_ts` → either the `thread_ts` query param verbatim, **or** reconstruct from the `p<digits>` segment by inserting a `.` before the last 6 digits (e.g. `p1776095524617999` → `1776095524.617999`).
-4. **Post the reply** — `mcp__claude_ai_Slack__slack_send_message` with `channel_id` set to the channel and `thread_ts` set to the parent message ts. Body in standard markdown.
+4. **Post the reply** — `slack_send_message` with `channel_id` set to the channel and `thread_ts` set to the parent message ts. Body in standard markdown.
 5. **Mention with Slack syntax** — `@greg.boers` won't notify; use `<@U019S5XAYE6>` (look up the user id with `slack_search_users` if you don't have it). Linear-style mentions are fine in Linear-native comments but break in Slack.
 6. **Verify** — the returned `message_link` confirms it landed in the thread (`?thread_ts=` will be present). It should appear back in Linear within seconds as a "via Slack" comment.
 

@@ -2,12 +2,12 @@
 name: slack
 description: >-
   Conventions and a cached directory of users + channels for working with the
-  Invenco Slack workspace (`invencoteam.slack.com`) via the `claude_ai_Slack`
-  MCP server — reading channels and threads, searching messages, and posting
+  Invenco Slack workspace (`invencoteam.slack.com`) via the Slack plugin
+  (MCP) — reading channels and threads, searching messages, and posting
   messages or drafts. Also covers posting via the Slack Web API directly (bot
   tokens, `chat.postMessage`/`chat.update`, Block Kit `rich_text` for correct
   list/code formatting). Consult this skill before the first
-  `mcp__claude_ai_Slack__*` call in a turn so you can skip user/channel ID
+  Slack MCP tool call in a turn so you can skip user/channel ID
   lookups and follow the posting conventions here, AND before any direct `curl`
   to `slack.com/api` — the formatting rules differ between the two paths and
   getting them wrong produces broken bullets/bold. Trigger whenever the user
@@ -93,7 +93,7 @@ When the user asks to post their standup:
 
 If no standup thread is found for today, tell the user - don't post a top-level message.
 
-> **Why direct-send, not a Slack draft, for standups.** When Claude sends via `slack_send_message`, Slack renders `-` bullets as real `•` and auto-appends a `*Sent using* <@U0AF947DA3E|Claude>` attribution stamp (the workspace's Claude app, bot `U0AF947DA3E`) — matching how teammates like Marc and Gerd post. A `slack_send_message_draft` that the user sends by hand goes out as a plain human post: no stamp, and the agent's markdown bullets are at the mercy of the composer. Steve wants the stamped, properly-bulleted format, so the review gate for standups is **in this chat** (show text → get OK → direct send), not a Slack-side draft. This is standup-specific; the general "prefer drafts" posture below still holds for everything else.
+> **Why direct-send, not a Slack draft, for standups.** When the agent sends via `slack_send_message`, Slack renders `-` bullets as real `•` and auto-appends a `*Sent using* <@U0AF947DA3E|Claude>` attribution stamp (the workspace's Claude app, bot `U0AF947DA3E`) — matching how teammates like Marc and Gerd post. A `slack_send_message_draft` that the user sends by hand goes out as a plain human post: no stamp, and the agent's markdown bullets are at the mercy of the composer. Steve wants the stamped, properly-bulleted format, so the review gate for standups is **in this chat** (show text → get OK → direct send), not a Slack-side draft. This is standup-specific; the general "prefer drafts" posture below still holds for everything else.
 
 ## When to read Slack
 
@@ -201,7 +201,7 @@ Gotchas:
 
 ## Slack ↔ Linear synced threads
 
-Triage tickets raised from Slack are bidirectionally synced: Slack thread replies appear in Linear (tagged "via Slack"), and Linear comments don't always sync back. **When a thread is Slack-synced, reply in the Slack thread**, not via `mcp__linear-server__save_comment` — the Slack reply mirrors back into Linear automatically and pings the watchers correctly.
+Triage tickets raised from Slack are bidirectionally synced: Slack thread replies appear in Linear (tagged "via Slack"), and Linear comments don't always sync back. **When a thread is Slack-synced, reply in the Slack thread**, not via Linear's `save_comment` — the Slack reply mirrors back into Linear automatically and pings the watchers correctly.
 
 Detection and step-by-step is in the linear skill (`Slack-synced threads` section). Key reminder: parse the synthetic marker comment to get `channel_id` and `thread_ts`, then post via `slack_send_message`.
 
