@@ -1,11 +1,11 @@
 ---
 name: notion
-description: Conventions and cached structure for working with the Invenco Notion workspace via the `notion-server` MCP server — projects, project notes, cycles, pitches, and page content. Consult this skill before the first `mcp__notion-server__*` call in a turn so the call is shaped by the conventions here. Trigger whenever the user mentions Notion, asks to create/read/update a project, add a note, check a pitch, look up a cycle, or refers to any Notion page — even if they don't explicitly say "Notion". Also trigger on phrases like "add a note to project X", "what's in the project notes", "check the pitch for X", "create a project for cycle N", or when the user pastes a notion.so URL.
+description: Conventions and cached structure for working with the Invenco Notion workspace via the configured Notion MCP server - projects, project notes, cycles, pitches, and page content. Consult this skill before the first Notion MCP tool call in a turn so the call is shaped by the conventions here. Trigger whenever the user mentions Notion, asks to create/read/update a project, add a note, check a pitch, look up a cycle, or refers to any Notion page - even if they don't explicitly say "Notion". Also trigger on phrases like "add a note to project X", "what's in the project notes", "check the pitch for X", "create a project for cycle N", or when the user pastes a notion.so URL.
 ---
 
 ## Authentication
 
-The Notion MCP requires OAuth each session. If a `mcp__notion-server__*` call fails or the tools aren't available yet, run `mcp__notion-server__authenticate` and ask the user to open the auth URL. If the redirect page shows a connection error, ask the user to paste the full URL from the address bar and call `mcp__notion-server__complete_authentication` with it.
+The Notion MCP requires OAuth each session. If a Notion MCP call fails or the tools aren't available yet, run the Notion `authenticate` tool and ask the user to open the auth URL. If the redirect page shows a connection error, ask the user to paste the full URL from the address bar and call the Notion `complete_authentication` tool with it.
 
 ## Workspace structure
 
@@ -64,7 +64,7 @@ An inline database embedded in each project page under the "Project Notes" tab. 
 | Related Links | text | |
 | Text | text | |
 
-The Project Notes tab is not visible via `notion-fetch` on the project page — the MCP only returns the "Project Details" tab content. To find notes for a project, search for the project name with `notion-search` scoped to the project page, or search the data source directly.
+The Project Notes tab is not visible via `notion-fetch` on the project page - the MCP only returns the "Project Details" tab content. To find notes for a project, search for the project name with `notion-search` scoped to the project page, or search the data source directly.
 
 ### Pitches database
 
@@ -87,7 +87,7 @@ When the user asks to "check the pitch" for a project, fetch the project first, 
 
 ### Adding a note to a project
 
-1. Find the project — search by name or fetch directly if you have the URL
+1. Find the project - search by name or fetch directly if you have the URL
 2. Create a page in the Project Notes data source with `notion-create-pages`:
    - `parent`: `{"type": "data_source_id", "data_source_id": "1c832119-cf02-80c3-a105-000bc724edfb"}`
    - Properties: `Name` (note title), `Type` (e.g. "Meeting"), `Project` (JSON array with the project page URL)
@@ -103,9 +103,9 @@ When the user asks to "check the pitch" for a project, fetch the project first, 
 
 ### Updating page content
 
-1. Always fetch the page first to get current content — `notion-update-page` with `update_content` command requires exact `old_str` matches
+1. Always fetch the page first to get current content - `notion-update-page` with `update_content` command requires exact `old_str` matches
 2. Use `update_content` with search-and-replace operations for surgical edits
-3. Use `replace_content` only when rewriting the entire page body — it will fail if child pages or databases would be deleted unless you preserve them with `<page url="...">` tags
+3. Use `replace_content` only when rewriting the entire page body - it will fail if child pages or databases would be deleted unless you preserve them with `<page url="...">` tags
 
 ### Querying a database view
 
@@ -113,9 +113,9 @@ Use `notion-query-database-view` with the view URL to get filtered/sorted result
 
 ## Notion MCP quirks
 
-- **Tabbed pages**: Project pages use a tabbed layout ("Project Details" / "Project Notes"). The `notion-fetch` tool only returns the content of the first tab. Inline databases in other tabs are invisible to fetch — use search to find their contents.
+- **Tabbed pages**: Project pages use a tabbed layout ("Project Details" / "Project Notes"). The `notion-fetch` tool only returns the content of the first tab. Inline databases in other tabs are invisible to fetch - use search to find their contents.
 - **Relations are page URLs**: Relation properties are JSON arrays of Notion page URLs, not IDs. Always pass them as `"[\"https://www.notion.so/<page-id>\"]"`.
 - **Date properties use expanded format**: Split into `date:<prop>:start`, `date:<prop>:end`, and `date:<prop>:is_datetime` (0 for date, 1 for datetime).
 - **Data source vs database**: The MCP distinguishes between databases (which can have multiple data sources/views) and data sources (collections). Use `data_source_id` as the parent type when creating pages, not `database_id`, especially for multi-source databases.
-- **Templates matter**: Always use the "New Project" template when creating projects — it sets up the tabbed layout and the inline Project Notes database. Without it, the project page is just a blank page.
+- **Templates matter**: Always use the "New Project" template when creating projects - it sets up the tabbed layout and the inline Project Notes database. Without it, the project page is just a blank page.
 - **Fetch before update**: The `update_content` command requires exact string matching on `old_str`. Always fetch the page first and use the exact content strings from the response.
