@@ -33,11 +33,13 @@ Edits to `skills/` are not live - republish after every change.
 pnpm exec skills init skills/<name>    # scaffold, then fill in SKILL.md
 pnpm upskill
 
-pnpm exec skills remove --global       # interactive removal from agents
+pnpm downskill <name> [<name>...]      # uninstall from every agent
 ```
 
-To retire a skill fully: remove it from agents (above), then delete its
-directory here.
+`downskill` only accepts names that have a `skills/<name>/SKILL.md` here, so it
+can never remove a company skill from the shared store. It leaves the source in
+place. To retire a skill for good, also delete its directory, otherwise the
+next `upskill` reinstalls it.
 
 ## Sanity check
 
