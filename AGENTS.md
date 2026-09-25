@@ -10,6 +10,9 @@ every agent through Vercel's `skills` CLI (pinned as a pnpm devDependency).
 (Codex and other agents read it natively) and symlinks it into
 `~/.claude/skills/` for Claude Code.
 
+`pnpm downskill <name>...` reverses that for the named skills. It refuses any
+name without a `skills/<name>/SKILL.md` in this repo and never touches source.
+
 ## Rules
 
 1. Edits here are NOT live. After changing anything under `skills/`, run

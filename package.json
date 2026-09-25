@@ -5,12 +5,13 @@
   "description": "Steve's personal agent skills, published to every agent via the skills CLI.",
   "packageManager": "pnpm@11.10.0",
   "scripts": {
-    "upskill": "skills add . --skill '*' --agent claude-code codex --global --yes"
+    "upskill": "skills add . --skill '*' --agent claude-code codex --global --yes",
+    "downskill": "bash scripts/downskill.sh"
   },
   "engines": {
     "node": ">=24"
   },
   "devDependencies": {
-    "skills": "^1.5.12"
+    "skills": "^1.7.0"
   }
 }
