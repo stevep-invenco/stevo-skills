@@ -1,0 +1,4 @@
+# Codex skill metadata. This skill runs only when invoked explicitly as
+# `$principal-walkthrough`; Codex must not trigger it from prompt content.
+policy:
+  allow_implicit_invocation: false
