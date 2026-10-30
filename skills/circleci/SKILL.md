@@ -15,6 +15,23 @@ flag that is not shown here.
 
 ## Before the first call
 
+Check for token environment variables before any authenticated command:
+
+```sh
+if [ "${CIRCLE_TOKEN+x}" = x ] || [ "${CIRCLECI_TOKEN+x}" = x ]; then
+  printf '%s\n' 'CircleCI token environment variable detected. Stop and ask the user for help.' >&2
+else
+  printf '%s\n' 'No CircleCI token environment variables detected.'
+fi
+```
+
+If either variable is present, stop and ask the user for help, even if its
+value is empty. Never print its value, unset it, or continue with a command
+that bypasses it. `CIRCLE_TOKEN` overrides the CLI's stored browser login.
+`CIRCLECI_TOKEN` was used by the deprecated MCP and also needs investigation.
+
+When neither variable is present, check the CLI and stored login:
+
 ```sh
 circleci version
 circleci auth me --json --jq '.login'
@@ -23,18 +40,20 @@ circleci auth me --json --jq '.login'
 - **Missing CLI or version 0.1.x.** The legacy 0.1.x CLI has no run,
   workflow or job commands. v1 installs with `brew install circleci` once the
   legacy release is removed. Ask the user before installing.
-- **"No CircleCI API token found".** Ask the user to run `circleci auth login`
-  in their own terminal (in Claude Code, `! circleci auth login`). Do not run
-  it yourself: without a terminal the CLI opens the user's browser and blocks
-  until they approve.
-- **Unexpected account.** The `CIRCLE_TOKEN` environment variable overrides
-  the stored login, and `circleci auth logout` does not clear it. Test whether
-  it is set with `[ -n "${CIRCLE_TOKEN:-}" ]` and never print it.
+- **"No CircleCI API token found".** Run `circleci auth login` to open the
+  browser and tell the user to complete sign-in there. Keep the command
+  running while they approve, then confirm with `circleci auth me`. If the
+  browser cannot open, ask the user for help instead of using a manual token.
+- **Unexpected account.** Stop and ask the user for help. Do not replace or
+  remove their stored login.
 
 ## Credentials
 
 Login stores an OAuth token in the system keyring (the macOS Keychain on a
-Mac). Keep it there.
+Mac). Keep it there. Use browser login only. Do not create or supply a
+manual API token, including when another skill suggests an environment
+variable or the legacy token file. If another skill requires either method,
+stop and explain the conflict to the user.
 
 - Never pass `--insecure-storage`, which writes the token into the CLI's
   config file.
