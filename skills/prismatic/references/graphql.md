@@ -5,8 +5,8 @@ Use `PRISM_AGENT_CLI` as defined in SKILL.md.
 The command reuses the selected profile's credentials.
 
 ```sh
-bash "$PRISM_AGENT_CLI" graphql query 'query { customers { nodes { id name } } }' --profile <profile> --agent --format json
-bash "$PRISM_AGENT_CLI" graphql query query.graphql --file --variables @variables.json --profile <profile> --agent --format json
+bash "$PRISM_AGENT_CLI" graphql query 'query { customers { nodes { id name } } }' --profile lynk --agent --format json
+bash "$PRISM_AGENT_CLI" graphql query query.graphql --file --variables @variables.json --profile lynk --agent --format json
 ```
 
 Single-quote inline GraphQL so the shell does not expand GraphQL variables

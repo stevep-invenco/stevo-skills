@@ -41,6 +41,12 @@ register hooks.
 
 ## Setup and identity
 
+For Lynk, use the stack URL `https://integration.lynksupplychain.com` and
+the named profile `lynk`. The `/designer/<integration-id>/` portion of a
+browser URL identifies an integration and is not part of the stack URL.
+Use another stack or profile only when the user identifies a different target.
+Verify that the saved `lynk` profile points to this stack before querying it.
+
 Check `command -v prism` and run the wrapper with `--version`. If missing, install with
 `npm install --global @prismatic-io/prism@11` when installation is authorized.
 Use Node >=22.19.0 for Prism 11.4.0 and follow the project's Node version
@@ -68,7 +74,7 @@ First list saved profiles, then verify the selected account:
 
 ```sh
 bash "$PRISM_AGENT_CLI" profiles list --agent --format json
-bash "$PRISM_AGENT_CLI" me --profile <profile> --agent --format json
+bash "$PRISM_AGENT_CLI" me --profile lynk --agent --format json
 ```
 
 Check the organization and endpoint against the requested target. Do not
@@ -76,12 +82,13 @@ guess a tenant from a customer name or silently switch accounts. An instance
 is a customer's configured deployment of an integration. A Prism profile
 selects the stack and organization tenant, not an individual customer.
 
-For a missing login, give the user this command to run themselves. Login
-changes stored credentials and must not bypass the agent wrapper. Choose
-the intended stack URL and profile before handing over the command:
+For a missing Lynk login, give the user these commands to run themselves and
+ask them to complete browser sign-in. Login changes stored credentials and
+must not bypass the agent wrapper:
 
 ```sh
-PRISMATIC_URL=https://<stack-host> prism login --profile <profile>
+nvm use 24
+PRISMATIC_URL=https://integration.lynksupplychain.com prism login --profile lynk
 ```
 
 Use the wrapper with `login --help` for headless URL login or tenant
@@ -121,13 +128,13 @@ The wrapper applies the read-only guard to every call. Replace placeholders
 with IDs from the selected account and keep `--profile` on each call.
 
 ```sh
-bash "$PRISM_AGENT_CLI" integrations list --profile <profile> --agent --format json --first 25
-bash "$PRISM_AGENT_CLI" customers list --profile <profile> --agent --format json --first 25
-bash "$PRISM_AGENT_CLI" instances list --customer <customer-id> --profile <profile> --agent --format json --first 25
-bash "$PRISM_AGENT_CLI" executions list --instance <instance-id> --status error --since 24h --first 25 --profile <profile> --agent --format json
-bash "$PRISM_AGENT_CLI" executions get <execution-id> --profile <profile> --agent --format json
-bash "$PRISM_AGENT_CLI" executions steps <execution-id> --failed --profile <profile> --agent --format json
-bash "$PRISM_AGENT_CLI" logs list --execution <execution-id> --since 24h --first 50 --profile <profile> --agent --format json
+bash "$PRISM_AGENT_CLI" integrations list --profile lynk --agent --format json --first 25
+bash "$PRISM_AGENT_CLI" customers list --profile lynk --agent --format json --first 25
+bash "$PRISM_AGENT_CLI" instances list --customer <customer-id> --profile lynk --agent --format json --first 25
+bash "$PRISM_AGENT_CLI" executions list --instance <instance-id> --status error --since 24h --first 25 --profile lynk --agent --format json
+bash "$PRISM_AGENT_CLI" executions get <execution-id> --profile lynk --agent --format json
+bash "$PRISM_AGENT_CLI" executions steps <execution-id> --failed --profile lynk --agent --format json
+bash "$PRISM_AGENT_CLI" logs list --execution <execution-id> --since 24h --first 50 --profile lynk --agent --format json
 ```
 
 Start with the customer's instance and the relevant time window, then inspect
