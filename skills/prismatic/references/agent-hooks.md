@@ -2,16 +2,19 @@
 
 The shared [hook definition](../hooks/hooks.json) works with both agents.
 It runs [block-raw-prism.py](../hooks/block-raw-prism.py) before shell tool
-calls and returns a denial for literal raw Prism invocations. It catches
-`prism`, absolute paths ending in `/prism`, shell command strings, and
-`@prismatic-io/prism` package invocations. Passing `--read-only` directly
+calls and returns a denial for `prism` in common executable positions.
+It catches direct commands, absolute paths ending in `/prism`, chained
+commands, explicit shell `-c` commands, and package runner invocations.
+Passing `--read-only` directly
 does not exempt a raw command. Mentioning the wrapper elsewhere in the same
 command does not exempt it either.
 
 The hook uses Python 3's standard library. It does not execute inspected
 input, modify commands, print command text, or approve unrelated commands.
 Allowed calls produce no output, preserving the agent's normal permission
-flow. Input that cannot be inspected produces an explicit denial.
+flow. Ordinary arguments, prose, search terms, and heredoc bodies are data,
+so mentions of `prism` or Prismatic there do not trigger the hook. Syntax
+that cannot be inspected also leaves the normal permission flow intact.
 
 ## Registration
 
@@ -38,12 +41,13 @@ deny the call with a message directing it to the wrapper. The wrapper's
 
 ## Limits
 
-Inspection is conservative. Shell arguments quoting raw Prism command
-examples can also be blocked. Keep documentation edits in the editor tool
-rather than sending quoted command examples through the shell.
+The hook deliberately favors avoiding false positives over exhaustive shell
+analysis. Clipboard heredocs and worklog headlines can contain command
+examples, punctuation, and apostrophes without being treated as CLI calls.
 
 The hook does not inspect arbitrary scripts, interpreter code, aliases,
-variable expansion, or renamed binaries. It cannot protect against an
+shell expansions, heredoc execution by an interpreter, or renamed binaries.
+It cannot protect against an
 agent editing or disabling its own hook. Calls sent through a different
 MCP or terminal tool may not match `Bash`. Codex does not rerun `PreToolUse`
 for input sent through `write_stdin` to an existing session.
